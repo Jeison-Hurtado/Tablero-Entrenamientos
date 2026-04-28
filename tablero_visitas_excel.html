@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Visitas a Empresas con Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .excel-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .excel-section.loaded {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .excel-input-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .file-input-label {
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #999;
+            background: #fff;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .file-input-label:hover {
+            border-color: #333;
+            background: #f0f0f0;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-info {
+            font-size: 12px;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-download {
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background: #28a745;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+        }
+
+        .btn-download:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar select,
+        .toolbar input[type="text"] {
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #1a1a1a;
+        }
+
+        .toolbar input[type="text"] {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .btn-add {
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #185FA5;
+            background: #185FA5;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #0C447C;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 600;
+            color: #185FA5;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            font-size: 14px;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s;
+        }
+
+        .tab.active {
+            color: #185FA5;
+            border-bottom-color: #185FA5;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            color: #333;
+        }
+
+        .view {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .view.hidden {
+            display: none;
+        }
+
+        /* Calendario */
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .cal-nav button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .cal-nav button:hover {
+            background: #f0f0f0;
+        }
+
+        .cal-month-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .cal-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .cal-dow {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            padding: 8px 0;
+            font-weight: 600;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .cal-cell {
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            display: flex;
+            flex-direction: column;
+            min-height: 80px;
+        }
+
+        .cal-cell:hover {
+            border-color: #185FA5;
+            background: #f0f7ff;
+        }
+
+        .cal-cell.today {
+            border: 2px solid #185FA5;
+            background: #f0f7ff;
+        }
+
+        .cal-cell.other-month {
+            background: #fff;
+            color: #ccc;
+        }
+
+        .day-num {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .cal-cell.other-month .day-num {
+            color: #ddd;
+        }
+
+        .visit-pill {
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .st-pendiente {
+            background: #FAEEDA;
+            color: #854F0B;
+        }
+
+        .st-confirmada {
+            background: #E6F1FB;
+            color: #185FA5;
+        }
+
+        .st-realizada {
+            background: #EAF3DE;
+            color: #3B6D11;
+        }
+
+        .st-cancelada {
+            background: #FCEBEB;
+            color: #A32D2D;
+        }
+
+        /* Lista */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        td {
+            font-size: 13px;
+            color: #1a1a1a;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .del-btn {
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 5px;
+        }
+
+        .del-btn:hover {
+            border-color: #999;
+            color: #333;
+        }
+
+        .del-btn.delete {
+            border-color: #A32D2D;
+            color: #A32D2D;
+        }
+
+        .del-btn.delete:hover {
+            background: #FCEBEB;
+        }
+
+        .empty {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            padding: 40px 0;
+        }
+
+        /* Gantt */
+        .gantt-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .gantt-legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .leg-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .leg-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .gantt-outer {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .gantt-table {
+            min-width: 600px;
+        }
+
+        .gantt-table th {
+            font-size: 11px;
+            padding: 6px 8px;
+            white-space: nowrap;
+        }
+
+        .gantt-table td {
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        .row-label {
+            font-weight: 500;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bar-cell {
+            position: relative;
+            height: 28px;
+        }
+
+        .bar-bg {
+            position: absolute;
+            top: 6px;
+            left: 0;
+            right: 0;
+            height: 16px;
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .bar {
+            position: absolute;
+            top: 6px;
+            height: 16px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            overflow: hidden;
+            cursor: default;
+            transition: opacity 0.15s;
+            min-width: 6px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .bar:hover {
+            opacity: 0.9;
+        }
+
+        .today-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E24B4A;
+            opacity: 0.6;
+        }
+
+        /* Modal */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+        }
+
+        .modal-bg.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 24px;
+            width: 420px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            font-size: 13px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #1a1a1a;
+            font-family: inherit;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: #185FA5;
+            background: #f0f7ff;
+        }
+
+        .modal-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-cancel {
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .btn-save {
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background: #185FA5;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #0C447C;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .excel-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .excel-input-wrap {
+                flex-direction: column;
+                min-width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .toolbar input[type="text"],
+            .toolbar select {
+                width: 100%;
+            }
+
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cal-cell {
+                min-height: 60px;
+                font-size: 11px;
+            }
+
+            .visit-pill {
+                font-size: 9px;
+                padding: 1px 3px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            td, th {
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Tablero de Visitas a Empresas</h1>
+            <p>Carga tu Excel, gestiona y visualiza toda la programación de visitas</p>
+        </div>
+
+        <!-- Sección de carga de Excel -->
+        <div class="excel-section" id="excelSection">
+            <div class="excel-input-wrap">
+                <label class="file-input-label">📁 Cargar Excel</label>
+                <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
+                <span class="file-info" id="fileInfo">Sin archivo cargado</span>
+            </div>
+            <button class="btn-download" id="downloadBtn" disabled onclick="downloadExcel()">💾 Descargar Excel</button>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <div class="toolbar">
+            <input type="text" id="search" placeholder="Buscar empresa o contacto...">
+            <select id="filterStatus">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="confirmada">Confirmada</option>
+                <option value="realizada">Realizada</option>
+                <option value="cancelada">Cancelada</option>
+            </select>
+            <select id="filterResp">
+                <option value="">Todos los responsables</option>
+            </select>
+            <button class="btn-add" onclick="openModal()">+ Nueva visita</button>
+        </div>
+
+        <div class="stats" id="statsRow"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('cal')">📅 Calendario</div>
+            <div class="tab" onclick="switchTab('list')">📋 Lista</div>
+            <div class="tab" onclick="switchTab('gantt')">📊 Gantt</div>
+        </div>
+
+        <!-- Calendario -->
+        <div id="viewCal" class="view">
+            <div class="cal-nav">
+                <button onclick="changeMonth(-1)">◀</button>
+                <span class="cal-month-title" id="monthTitle"></span>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="cal-header">
+                <div class="cal-dow">Dom</div>
+                <div class="cal-dow">Lun</div>
+                <div class="cal-dow">Mar</div>
+                <div class="cal-dow">Mié</div>
+                <div class="cal-dow">Jue</div>
+                <div class="cal-dow">Vie</div>
+                <div class="cal-dow">Sáb</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <!-- Lista -->
+        <div id="viewList" class="view hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Contacto</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Responsable</th>
+                        <th>Estado</th>
+                        <th>Notas</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="listBody"></tbody>
+            </table>
+            <div id="listEmpty" class="empty" style="display: none;">No hay visitas registradas.</div>
+        </div>
+
+        <!-- Gantt -->
+        <div id="viewGantt" class="view hidden">
+            <div class="gantt-controls">
+                <select id="gFilterStatus">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="realizada">Realizada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+                <select id="gFilterResp">
+                    <option value="">Todos los responsables</option>
+                </select>
+                <select id="gRange">
+                    <option value="30">Próximos 30 días</option>
+                    <option value="60">Próximos 60 días</option>
+                    <option value="90">Próximos 90 días</option>
+                    <option value="all">Todo el periodo</option>
+                </select>
+            </div>
+            <div class="gantt-legend">
+                <div class="leg-item"><div class="leg-swatch" style="background: #EF9F27;"></div> Pendiente</div>
+                <div class="leg-item"><div class="leg-swatch" style="background: #85B7EB;"></div> Confirmada</div>
+                <div class="leg-item"><div class="leg-swatch" style="background: #97C459;"></div> Realizada</div>
+                <div class="leg-item"><div class="leg-swatch" style="background: #F09595;"></div> Cancelada</div>
+            </div>
+            <div class="gantt-outer" id="ganttOuter"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-bg" id="modalBg">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3 id="modalTitle">Nueva visita</h3>
+            <div class="modal-grid">
+                <div class="field">
+                    <label>Empresa *</label>
+                    <input id="fEmpresa" type="text" placeholder="Nombre empresa">
+                </div>
+                <div class="field">
+                    <label>Contacto</label>
+                    <input id="fContacto" type="text" placeholder="Nombre contacto">
+                </div>
+                <div class="field">
+                    <label>Fecha *</label>
+                    <input id="fFecha" type="date">
+                </div>
+                <div class="field">
+                    <label>Hora</label>
+                    <input id="fHora" type="time">
+                </div>
+                <div class="field">
+                    <label>Responsable</label>
+                    <input id="fResp" type="text" placeholder="Nombre vendedor">
+                </div>
+                <div class="field">
+                    <label>Estado</label>
+                    <select id="fEstado">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="realizada">Realizada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label>Notas</label>
+                <textarea id="fNotas" placeholder="Observaciones..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn-save" onclick="saveVisit()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        let visits = [];
+        let nextId = 1;
+        let curYear = new Date().getFullYear(), curMonth = new Date().getMonth();
+        let activeTab = 'cal';
+        let editId = null;
+        let fileLoaded = false;
+
+        // Manejador de carga de archivo
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    visits = jsonData.map((row, idx) => ({
+                        id: idx + 1,
+                        empresa: row['Empresa'] || row['empresa'] || '',
+                        contacto: row['Contacto'] || row['contacto'] || '',
+                        fecha: formatDateForInput(row['Fecha'] || row['fecha'] || ''),
+                        hora: row['Hora'] || row['hora'] || '',
+                        responsable: row['Responsable'] || row['responsable'] || '',
+                        estado: (row['Estado'] || row['estado'] || 'pendiente').toLowerCase(),
+                        notas: row['Notas'] || row['notas'] || ''
+                    })).filter(v => v.empresa);
+
+                    nextId = Math.max(...visits.map(v => v.id), 0) + 1;
+                    fileLoaded = true;
+                    document.getElementById('excelSection').classList.add('loaded');
+                    document.getElementById('fileInfo').textContent = `✓ ${file.name} cargado (${visits.length} registros)`;
+                    document.getElementById('downloadBtn').disabled = false;
+
+                    showAlert(`Excel cargado exitosamente con ${visits.length} visitas`, 'success');
+                    render();
+                } catch (err) {
+                    showAlert('Error al leer el archivo Excel: ' + err.message, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            if (isNaN(date)) return dateStr;
+            return date.toISOString().split('T')[0];
+        }
+
+        function getFiltered() {
+            const s = document.getElementById('search').value.toLowerCase();
+            const st = document.getElementById('filterStatus').value;
+            const r = document.getElementById('filterResp').value;
+            return visits.filter(v => {
+                if (s && !v.empresa.toLowerCase().includes(s) && !v.contacto.toLowerCase().includes(s)) return false;
+                if (st && v.estado !== st) return false;
+                if (r && v.responsable !== r) return false;
+                return true;
+            });
+        }
+
+        function renderStats() {
+            const total = visits.length;
+            const pend = visits.filter(v => v.estado === 'pendiente').length;
+            const conf = visits.filter(v => v.estado === 'confirmada').length;
+            const real = visits.filter(v => v.estado === 'realizada').length;
+            document.getElementById('statsRow').innerHTML = `
+                <div class="stat"><div class="stat-label">Total visitas</div><div class="stat-num">${total}</div></div>
+                <div class="stat"><div class="stat-label">Pendientes</div><div class="stat-num" style="color: #854F0B;">${pend}</div></div>
+                <div class="stat"><div class="stat-label">Confirmadas</div><div class="stat-num" style="color: #185FA5;">${conf}</div></div>
+                <div class="stat"><div class="stat-label">Realizadas</div><div class="stat-num" style="color: #3B6D11;">${real}</div></div>
+            `;
+        }
+
+        function renderCal() {
+            const filtered = getFiltered();
+            const title = MONTHS[curMonth] + ' ' + curYear;
+            document.getElementById('monthTitle').textContent = title;
+
+            const first = new Date(curYear, curMonth, 1).getDay();
+            const days = new Date(curYear, curMonth + 1, 0).getDate();
+            const prevDays = new Date(curYear, curMonth, 0).getDate();
+            const today = new Date();
+
+            let html = '';
+            let cells = first;
+
+            for (let i = cells - 1; i >= 0; i--) {
+                html += `<div class="cal-cell other-month"><div class="day-num">${prevDays - i}</div></div>`;
+            }
+
+            for (let d = 1; d <= days; d++) {
+                const isToday = today.getFullYear() === curYear && today.getMonth() === curMonth && today.getDate() === d;
+                const ds = curYear + '-' + String(curMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                const dayVisits = filtered.filter(v => v.fecha === ds);
+                let pills = dayVisits.slice(0, 3).map(v => `<div class="visit-pill st-${v.estado}" title="${v.empresa} — ${v.hora}" onclick="openEditModal(${v.id}, event)">${v.hora} ${v.empresa}</div>`).join('');
+                if (dayVisits.length > 3) pills += `<div style="font-size: 10px; color: #999; margin-top: 2px;">+${dayVisits.length - 3} más</div>`;
+
+                html += `<div class="cal-cell${isToday ? ' today' : ''}" onclick="openNewOnDay('${ds}')"><div class="day-num">${d}</div>${pills}</div>`;
+                cells++;
+            }
+
+            const rem = (7 - (cells % 7)) % 7;
+            for (let i = 1; i <= rem; i++) html += `<div class="cal-cell other-month"><div class="day-num">${i}</div></div>`;
+
+            document.getElementById('calGrid').innerHTML = html;
+        }
+
+        function renderList() {
+            const filtered = getFiltered().sort((a, b) => a.fecha.localeCompare(b.fecha));
+            const tbody = document.getElementById('listBody');
+            const empty = document.getElementById('listEmpty');
+
+            if (!filtered.length) {
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            tbody.innerHTML = filtered.map(v => `
+                <tr>
+                    <td class="row-label"><strong>${v.empresa}</strong></td>
+                    <td>${v.contacto || '—'}</td>
+                    <td>${formatDate(v.fecha)}</td>
+                    <td>${v.hora || '—'}</td>
+                    <td>${v.responsable || '—'}</td>
+                    <td><span class="badge st-${v.estado}">${capitalize(v.estado)}</span></td>
+                    <td style="max-width: 150px; color: #999; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${v.notas || '—'}</td>
+                    <td>
+                        <button class="del-btn" onclick="openEditModal(${v.id}, event)">Editar</button>
+                        <button class="del-btn delete" onclick="deleteVisit(${v.id})">Eliminar</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function renderGantt() {
+            const st = document.getElementById('gFilterStatus').value;
+            const rp = document.getElementById('gFilterResp').value;
+            const rangeVal = document.getElementById('gRange').value;
+
+            const today = new Date();
+            let start, end;
+
+            if (rangeVal === 'all') {
+                const dates = visits.map(v => new Date(v.fecha + 'T00:00:00'));
+                if (dates.length === 0) {
+                    document.getElementById('ganttOuter').innerHTML = '<div class="empty">No hay visitas para mostrar.</div>';
+                    return;
+                }
+                const minDate = new Date(Math.min(...dates));
+                const maxDate = new Date(Math.max(...dates));
+                start = new Date(minDate.getTime() - 86400000 * 2);
+                end = new Date(maxDate.getTime() + 86400000 * 3);
+            } else {
+                const days = parseInt(rangeVal);
+                start = new Date(today.getTime() - 86400000 * 3);
+                end = new Date(today.getTime() + 86400000 * (days - 3));
+            }
+
+            const filtered = visits.filter(v => {
+                if (st && v.estado !== st) return false;
+                if (rp && v.responsable !== rp) return false;
+                return true;
+            }).sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+            if (!filtered.length) {
+                document.getElementById('ganttOuter').innerHTML = '<div class="empty">No hay visitas para mostrar con estos filtros.</div>';
+                return;
+            }
+
+            const totalMs = end - start;
+            const totalDays = Math.round(totalMs / 86400000);
+
+            const pct = (d) => Math.max(0, Math.min(100, (d - start) / totalMs * 100));
+            const todayPct = pct(today);
+
+            let thead = '<tr><th style="text-align: left; min-width: 130px;">Empresa</th><th style="text-align: left; min-width: 80px;">Responsable</th><th style="text-align: left; width: 50px;">Hora</th><th style="width: 100%;"><div style="position: relative; height: 20px;">';
+
+            const step = totalDays > 45 ? 7 : totalDays > 20 ? 3 : 1;
+            for (let i = 0; i <= totalDays; i += step) {
+                const d = new Date(start.getTime() + i * 86400000);
+                const p = pct(d);
+                const isToday = d.toDateString() === today.toDateString();
+                const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                thead += `<span style="position: absolute; left: ${p}%; transform: translateX(-50%); font-size: 10px; color: ${isToday ? '#A32D2D' : '#999'}; font-weight: ${isToday ? 500 : 400}; white-space: nowrap;">${d.getDate()} ${months[d.getMonth()]}</span>`;
+            }
+            thead += '</div></th></tr>';
+
+            let rows = '';
+            filtered.forEach(v => {
+                const vDate = new Date(v.fecha + 'T00:00:00');
+                const colors = {
+                    pendiente: { bar: '#EF9F27', text: '#fff' },
+                    confirmada: { bar: '#85B7EB', text: '#fff' },
+                    realizada: { bar: '#97C459', text: '#fff' },
+                    cancelada: { bar: '#F09595', text: '#fff' }
+                };
+                const c = colors[v.estado] || colors.pendiente;
+                const left = pct(vDate);
+                const barW = Math.max(0.8, 100 / totalDays);
+
+                rows += `<tr>
+                    <td><div class="row-label">${v.empresa}</div></td>
+                    <td>${v.responsable || '—'}</td>
+                    <td>${v.hora || '—'}</td>
+                    <td>
+                        <div class="bar-cell">
+                            <div class="bar-bg"></div>
+                            ${todayPct >= 0 && todayPct <= 100 ? `<div class="today-line" style="left: ${todayPct}%;"></div>` : ''}
+                            <div class="bar" style="left: ${left}%; width: ${barW}%; background: ${c.bar}; min-width: 6px;" title="${v.empresa} — ${formatDate(v.fecha)}">${v.empresa}</div>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            document.getElementById('ganttOuter').innerHTML = `<table class="gantt-table"><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
+        }
+
+        function renderResponsables() {
+            const sel = document.getElementById('filterResp');
+            const cur = sel.value;
+            const resps = [...new Set(visits.map(v => v.responsable).filter(Boolean))].sort();
+            sel.innerHTML = '<option value="">Todos los responsables</option>' + resps.map(r => `<option value="${r}"${cur === r ? ' selected' : ''}>${r}</option>`).join('');
+
+            const gSel = document.getElementById('gFilterResp');
+            const gCur = gSel.value;
+            gSel.innerHTML = '<option value="">Todos los responsables</option>' + resps.map(r => `<option value="${r}"${gCur === r ? ' selected' : ''}>${r}</option>`).join('');
+        }
+
+        function render() {
+            renderStats();
+            renderResponsables();
+            if (activeTab === 'cal') renderCal();
+            else if (activeTab === 'list') renderList();
+            else if (activeTab === 'gantt') renderGantt();
+        }
+
+        function switchTab(t) {
+            activeTab = t;
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('viewCal').classList.add('hidden');
+            document.getElementById('viewList').classList.add('hidden');
+            document.getElementById('viewGantt').classList.add('hidden');
+
+            if (t === 'cal') document.getElementById('viewCal').classList.remove('hidden');
+            else if (t === 'list') document.getElementById('viewList').classList.remove('hidden');
+            else if (t === 'gantt') document.getElementById('viewGantt').classList.remove('hidden');
+
+            render();
+        }
+
+        function changeMonth(d) {
+            curMonth += d;
+            if (curMonth > 11) { curMonth = 0; curYear++; }
+            if (curMonth < 0) { curMonth = 11; curYear--; }
+            renderCal();
+        }
+
+        function openModal(fecha) {
+            editId = null;
+            document.getElementById('modalTitle').textContent = 'Nueva visita';
+            document.getElementById('fEmpresa').value = '';
+            document.getElementById('fContacto').value = '';
+            document.getElementById('fFecha').value = fecha || '';
+            document.getElementById('fHora').value = '';
+            document.getElementById('fResp').value = '';
+            document.getElementById('fEstado').value = 'pendiente';
+            document.getElementById('fNotas').value = '';
+            document.getElementById('modalBg').classList.add('show');
+        }
+
+        function openNewOnDay(fecha) {
+            openModal(fecha);
+        }
+
+        function openEditModal(id, e) {
+            if (e) e.stopPropagation();
+            const v = visits.find(x => x.id === id);
+            if (!v) return;
+            editId = id;
+            document.getElementById('modalTitle').textContent = 'Editar visita';
+            document.getElementById('fEmpresa').value = v.empresa;
+            document.getElementById('fContacto').value = v.contacto;
+            document.getElementById('fFecha').value = v.fecha;
+            document.getElementById('fHora').value = v.hora;
+            document.getElementById('fResp').value = v.responsable;
+            document.getElementById('fEstado').value = v.estado;
+            document.getElementById('fNotas').value = v.notas;
+            document.getElementById('modalBg').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalBg').classList.remove('show');
+        }
+
+        document.getElementById('modalBg').addEventListener('click', (e) => {
+            if (e.target.id === 'modalBg') closeModal();
+        });
+
+        function saveVisit() {
+            const emp = document.getElementById('fEmpresa').value.trim();
+            const fecha = document.getElementById('fFecha').value;
+            if (!emp || !fecha) {
+                showAlert('Empresa y fecha son requeridos.', 'error');
+                return;
+            }
+
+            const v = {
+                id: editId || nextId++,
+                empresa: emp,
+                contacto: document.getElementById('fContacto').value.trim(),
+                fecha,
+                hora: document.getElementById('fHora').value,
+                responsable: document.getElementById('fResp').value.trim(),
+                estado: document.getElementById('fEstado').value,
+                notas: document.getElementById('fNotas').value.trim()
+            };
+
+            if (editId) {
+                const i = visits.findIndex(x => x.id === editId);
+                visits[i] = v;
+                showAlert('Visita actualizada exitosamente', 'success');
+            } else {
+                visits.push(v);
+                showAlert('Nueva visita agregada', 'success');
+            }
+
+            closeModal();
+            render();
+        }
+
+        function deleteVisit(id) {
+            if (confirm('¿Eliminar esta visita?')) {
+                visits = visits.filter(v => v.id !== id);
+                showAlert('Visita eliminada', 'success');
+                render();
+            }
+        }
+
+        function downloadExcel() {
+            if (!visits.length) {
+                showAlert('No hay visitas para descargar', 'error');
+                return;
+            }
+
+            const data = visits.map(v => ({
+                'Empresa': v.empresa,
+                'Contacto': v.contacto,
+                'Fecha': v.fecha,
+                'Hora': v.hora,
+                'Responsable': v.responsable,
+                'Estado': v.estado,
+                'Notas': v.notas
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Visitas');
+            XLSX.writeFile(wb, 'visitas_' + new Date().toISOString().split('T')[0] + '.xlsx');
+            showAlert('Excel descargado exitosamente', 'success');
+        }
+
+        function formatDate(d) {
+            if (!d) return '—';
+            const [y, m, dd] = d.split('-');
+            return `${dd}/${m}/${y}`;
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        function showAlert(msg, type) {
+            const box = document.getElementById('alertBox');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = msg;
+            box.innerHTML = '';
+            box.appendChild(alert);
+            setTimeout(() => alert.remove(), 4000);
+        }
+
+        document.getElementById('search').addEventListener('input', render);
+        document.getElementById('filterStatus').addEventListener('change', render);
+        document.getElementById('filterResp').addEventListener('change', render);
+        document.getElementById('gFilterStatus').addEventListener('change', () => renderGantt());
+        document.getElementById('gFilterResp').addEventListener('change', () => renderGantt());
+        document.getElementById('gRange').addEventListener('change', () => renderGantt());
+
+        render();
+    </script>
+</body>
+</html>
