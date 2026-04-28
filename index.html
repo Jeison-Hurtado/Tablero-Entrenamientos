@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Acompañamientos - GHT</title>
+    <title>GHT - Gestión de Acompañamientos</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -15,28 +15,35 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eceff1;
+            background: #f0f4f3;
             color: #1a1a1a;
             min-height: 100vh;
         }
 
-        /* Header */
-        .header-main {
+        /* ===== HEADER ===== */
+        .header {
             background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
             padding: 20px 30px;
             display: flex;
             align-items: center;
             gap: 30px;
-            border-radius: 0 0 20px 20px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .logo {
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+
+        .logo-box {
             background: white;
             width: 70px;
             height: 70px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -44,48 +51,46 @@
             font-size: 28px;
             color: #1b5e20;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            flex-shrink: 0;
         }
 
-        .header-title {
-            flex: 1;
-        }
-
-        .header-title h1 {
-            font-size: 28px;
+        .logo-text h1 {
+            font-size: 24px;
             color: white;
-            margin-bottom: 4px;
             font-weight: 700;
+            line-height: 1.2;
         }
 
-        .header-title p {
-            color: rgba(255,255,255,0.85);
-            font-size: 13px;
+        .logo-text p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
         }
 
         .header-filters {
             display: flex;
             gap: 15px;
             align-items: center;
+            flex: 1;
+            min-width: 400px;
             flex-wrap: wrap;
         }
 
         .filter-group {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 5px;
             background: rgba(255,255,255,0.1);
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
             border: 2px solid rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
+            min-width: 160px;
         }
 
         .filter-group label {
-            font-size: 12px;
-            color: white;
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
             font-weight: 600;
-            white-space: nowrap;
+            text-transform: uppercase;
         }
 
         .filter-group select,
@@ -93,10 +98,10 @@
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 6px 10px;
+            padding: 7px 10px;
             border-radius: 6px;
             font-size: 12px;
-            min-width: 120px;
+            font-weight: 500;
         }
 
         .filter-group select option {
@@ -105,14 +110,14 @@
         }
 
         .filter-group input::placeholder {
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.5);
         }
 
         .btn-actualizar {
             background: white;
             color: #1b5e20;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 18px;
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
@@ -122,6 +127,7 @@
             gap: 6px;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            white-space: nowrap;
         }
 
         .btn-actualizar:hover {
@@ -135,13 +141,10 @@
             padding: 0 20px 30px 20px;
         }
 
-        .alert-box {
-            margin-bottom: 20px;
-        }
-
         .alert {
             padding: 14px 18px;
             border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 13px;
             font-weight: 500;
             animation: slideDown 0.3s ease;
@@ -170,15 +173,49 @@
             }
         }
 
-        /* Grid Dashboard */
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 24px;
-            margin-bottom: 24px;
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        /* Card */
+        .btn-tool {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 2px solid #2e7d32;
+            background: white;
+            color: #2e7d32;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-tool:hover {
+            background: #e8f5e9;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* ===== DASHBOARD GRID ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
         .card {
             background: white;
             border-radius: 16px;
@@ -202,24 +239,24 @@
             gap: 12px;
             margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 3px solid #e8f5e9;
+            border-bottom: 3px solid #2e7d32;
         }
 
         .card-icon {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
             background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 24px;
             color: white;
             flex-shrink: 0;
         }
 
         .card-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: #1b5e20;
             text-transform: uppercase;
@@ -229,7 +266,7 @@
         .chart-container {
             position: relative;
             height: 200px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .donut-center {
@@ -242,14 +279,14 @@
         }
 
         .donut-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
             color: #1a1a1a;
             line-height: 1;
         }
 
         .donut-label {
-            font-size: 11px;
+            font-size: 12px;
             color: #999;
             margin-top: 4px;
         }
@@ -259,7 +296,7 @@
             flex-direction: column;
             gap: 10px;
             margin-top: 16px;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .stat-item {
@@ -295,30 +332,22 @@
             font-weight: 600;
         }
 
-        .card-objective svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Card Zonas */
-        .card.zonas {
-            grid-column: 1 / -1;
-        }
-
+        /* ===== ZONAS CARD ===== */
         .zonas-content {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
         .zona-item {
             display: grid;
-            grid-template-columns: 80px 1fr 80px;
+            grid-template-columns: 90px 1fr 100px;
             gap: 12px;
             align-items: center;
             padding: 12px;
-            background: #f5f5f5;
+            background: #f9f9f9;
             border-radius: 8px;
+            border: 1px solid #e8f5e9;
         }
 
         .zona-name {
@@ -328,8 +357,16 @@
             text-transform: uppercase;
         }
 
+        .zona-stats {
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
         .zona-bar {
-            height: 24px;
+            height: 20px;
             background: #e0e0e0;
             border-radius: 6px;
             overflow: hidden;
@@ -341,37 +378,30 @@
             background: linear-gradient(90deg, #1e88e5 0%, #1565c0 100%);
             border-radius: 6px;
             transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 6px;
-            min-width: 30px;
-        }
-
-        .zona-fill.empty {
-            background: #e0e0e0;
+            min-width: 5px;
         }
 
         .zona-percent {
             font-weight: 700;
-            font-size: 13px;
+            font-size: 12px;
             color: white;
             background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
             padding: 4px 10px;
             border-radius: 6px;
-            min-width: 60px;
             text-align: center;
         }
 
         .zona-legend {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 20px;
             padding: 12px;
-            background: #f5f5f5;
+            background: #f9f9f9;
             border-radius: 8px;
             margin-top: 12px;
             font-size: 11px;
             color: #666;
+            border: 1px solid #e8f5e9;
         }
 
         .zona-legend-item {
@@ -386,7 +416,7 @@
             border-radius: 2px;
         }
 
-        /* KPI Footer */
+        /* ===== KPI FOOTER ===== */
         .kpi-footer {
             background: white;
             border-radius: 16px;
@@ -394,8 +424,10 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             border: 2px solid #e8f5e9;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr auto 1fr;
             gap: 30px;
+            align-items: center;
+            margin-bottom: 30px;
         }
 
         .kpi-item {
@@ -451,7 +483,232 @@
             border-top: 2px solid #e8f5e9;
         }
 
-        /* Modal */
+        /* ===== TABS ===== */
+        .tabs-section {
+            margin-bottom: 30px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 0;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 2px solid #e8f5e9;
+            border-bottom: none;
+        }
+
+        .tab-btn {
+            padding: 14px 24px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            background: #ececec;
+            color: #2e7d32;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1b5e20;
+            border-bottom-color: #1b5e20;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 24px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 2px solid #e8f5e9;
+            border-top: none;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== CALENDARIO ===== */
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav button:hover {
+            background: #1b5e20;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .cal-day-header {
+            text-align: center;
+            font-weight: 700;
+            color: #2e7d32;
+            padding: 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            border: 1px solid #e8f5e9;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cal-day:hover {
+            border-color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .cal-day.has-events {
+            border-color: #1e88e5;
+            background: #e3f2fd;
+        }
+
+        /* ===== TABLA ===== */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        }
+
+        th {
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e8f5e9;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .badge-estado {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-completado {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+
+        .badge-pendiente {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
+        /* ===== GANTT ===== */
+        .gantt-chart {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .gantt-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .gantt-label {
+            width: 120px;
+            flex-shrink: 0;
+            padding-right: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .gantt-bar-container {
+            flex: 1;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gantt-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .gantt-bar.completado {
+            background: linear-gradient(90deg, #43a047 0%, #2e7d32 100%);
+        }
+
+        .gantt-bar.pendiente {
+            background: linear-gradient(90deg, #fbc02d 0%, #f57f17 100%);
+        }
+
+        .gantt-bar:hover {
+            opacity: 0.85;
+        }
+
+        /* ===== MODAL ===== */
         .modal-bg {
             position: fixed;
             inset: 0;
@@ -574,58 +831,25 @@
             box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
         }
 
-        .toolbar-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding: 16px;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
 
-        .btn-file {
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: 2px solid #2e7d32;
-            background: white;
-            color: #2e7d32;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-file:hover {
-            background: #e8f5e9;
-        }
-
-        #fileInput {
-            display: none;
+            .dashboard > :nth-child(3) {
+                grid-column: 1 / -1;
+            }
         }
 
         @media (max-width: 768px) {
-            .header-main {
+            .header {
                 flex-direction: column;
                 gap: 16px;
-                align-items: flex-start;
-            }
-
-            .header-title h1 {
-                font-size: 22px;
             }
 
             .header-filters {
                 width: 100%;
-                flex-direction: column;
-            }
-
-            .filter-group {
-                width: 100%;
+                min-width: unset;
             }
 
             .dashboard {
@@ -634,7 +858,6 @@
 
             .kpi-footer {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
 
             .divider {
@@ -642,51 +865,70 @@
             }
 
             .zona-item {
-                grid-template-columns: 60px 1fr 70px;
+                grid-template-columns: 80px 1fr 80px;
+            }
+
+            .tabs-nav {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 10px 16px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <div class="header-main">
-        <div class="logo">CHT</div>
-        <div class="header-title">
-            <h1>Gestión de Acompañamientos</h1>
-            <p>Programación y seguimiento de visitas a empresas</p>
+    <div class="header">
+        <div class="header-logo">
+            <div class="logo-box">GHT</div>
+            <div class="logo-text">
+                <h1>Gestión de Acompañamientos</h1>
+            </div>
         </div>
+
         <div class="header-filters">
             <div class="filter-group">
-                <label>Modalidad:</label>
+                <label>Modalidad</label>
                 <select id="filterModalidad">
                     <option value="">Todas</option>
                     <option value="presencial">Presencial</option>
                     <option value="virtual">Virtual</option>
+                    <option value="sin_programar">Sin programar</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Tipo:</label>
+                <label>Tipo de acompañamiento</label>
                 <select id="filterTipo">
                     <option value="">Todos</option>
                     <option value="blanco">En blanco</option>
                     <option value="vu">VÚ / SV</option>
                 </select>
             </div>
-            <button class="btn-actualizar" onclick="render()">🔄 Actualizar Información</button>
+            <div class="filter-group">
+                <label>Responsable</label>
+                <select id="filterResponsable">
+                    <option value="">Todos</option>
+                </select>
+            </div>
         </div>
+
+        <button class="btn-actualizar" onclick="render()">🔄 Actualizar Información</button>
     </div>
 
     <div class="container">
-        <div class="alert-box" id="alertBox"></div>
+        <div id="alertBox"></div>
 
-        <div class="toolbar-buttons">
-            <label for="fileInput" class="btn-file">📁 Cargar Excel</label>
+        <div class="toolbar">
+            <label for="fileInput" class="btn-tool">📁 Cargar Excel</label>
             <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
-            <button class="btn-file" onclick="downloadExcel()">💾 Descargar Excel</button>
-            <button class="btn-file" style="border-color: #d32f2f; color: #d32f2f;" onclick="openModal()">➕ Nueva Visita</button>
+            <button class="btn-tool" onclick="downloadExcel()">💾 Descargar Excel</button>
+            <button class="btn-tool" onclick="openModal()">➕ Nueva Visita</button>
         </div>
 
-        <!-- Dashboard -->
+        <!-- Dashboard Principal -->
         <div class="dashboard">
             <!-- Programación -->
             <div class="card">
@@ -759,7 +1001,7 @@
             </div>
 
             <!-- Avance por Zona -->
-            <div class="card zonas">
+            <div class="card">
                 <div class="card-header">
                     <div class="card-icon">📍</div>
                     <div class="card-title">Avance por Zona</div>
@@ -789,6 +1031,49 @@
                 Información actualizada al momento de la consulta
             </div>
         </div>
+
+        <!-- Tabs Section -->
+        <div class="tabs-section">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('calendario')">📅 Calendario</button>
+                <button class="tab-btn" onclick="switchTab('lista')">📋 Lista</button>
+                <button class="tab-btn" onclick="switchTab('gantt')">📊 Diagrama de Gantt</button>
+            </div>
+
+            <!-- Calendario -->
+            <div id="calendario" class="tab-content active">
+                <div class="calendar-nav">
+                    <button onclick="previousMonth()">◀ Anterior</button>
+                    <span style="font-weight: 600; color: #1b5e20;" id="monthTitle"></span>
+                    <button onclick="nextMonth()">Siguiente ▶</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <!-- Lista -->
+            <div id="lista" class="tab-content">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Zona</th>
+                                <th>Responsable</th>
+                                <th>Empresa</th>
+                                <th>Estado</th>
+                                <th>Modalidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gantt -->
+            <div id="gantt" class="tab-content">
+                <div class="gantt-chart" id="ganttChart"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -814,7 +1099,15 @@
                 </div>
                 <div class="field">
                     <label>Zona</label>
-                    <input id="fZona" type="text" placeholder="Ej: ANTIOQUIA">
+                    <select id="fZona">
+                        <option value="">Seleccionar</option>
+                        <option value="ANTIOQUIA">Antioquia</option>
+                        <option value="CENTRO">Centro</option>
+                        <option value="NORTE">Norte</option>
+                        <option value="OCCIDENTE">Occidente</option>
+                        <option value="OTROS">Otros</option>
+                        <option value="ECUADOR">Ecuador</option>
+                    </select>
                 </div>
                 <div class="field">
                     <label>Responsable</label>
@@ -824,9 +1117,7 @@
                     <label>Estado</label>
                     <select id="fEstado">
                         <option value="pendiente">Pendiente</option>
-                        <option value="confirmada">Confirmada</option>
-                        <option value="realizada">Realizada</option>
-                        <option value="cancelada">Cancelada</option>
+                        <option value="completado">Completado</option>
                     </select>
                 </div>
                 <div class="field">
@@ -854,6 +1145,23 @@
         let editId = null;
         let chartProgramacion = null;
         let chartCumplimiento = null;
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Datos de ejemplo
+        const datosEjemplo = [
+            { id: 1, empresa: 'Bancolombia', contacto: 'Ana García', fecha: '2026-04-28', hora: '10:00', zona: 'CENTRO', responsable: 'Laura Torres', estado: 'completado', modalidad: 'presencial', notas: '' },
+            { id: 2, empresa: 'Grupo Éxito', contacto: 'Carlos López', fecha: '2026-04-29', hora: '14:30', zona: 'ANTIOQUIA', responsable: 'Juan García', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 3, empresa: 'Cemex Colombia', contacto: 'Marta Ríos', fecha: '2026-05-05', hora: '09:00', zona: 'NORTE', responsable: 'Pedro Lima', estado: 'completado', modalidad: 'virtual', notas: '' },
+            { id: 4, empresa: 'Avianca', contacto: 'Sandra Niño', fecha: '2026-05-08', hora: '11:00', zona: 'OCCIDENTE', responsable: 'Laura Torres', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 5, empresa: 'Alpina', contacto: 'Roberto Silva', fecha: '2026-05-10', hora: '15:00', zona: 'ECUADOR', responsable: 'Juan García', estado: 'pendiente', modalidad: 'virtual', notas: '' },
+            { id: 6, empresa: 'Telefonica', contacto: 'Diana Martínez', fecha: '2026-04-30', hora: '13:00', zona: 'CENTRO', responsable: 'Pedro Lima', estado: 'completado', modalidad: 'presencial', notas: '' },
+            { id: 7, empresa: 'Bavaria', contacto: 'Andrés Gómez', fecha: '2026-05-03', hora: '10:30', zona: 'ANTIOQUIA', responsable: 'Laura Torres', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 8, empresa: 'Colpatria', contacto: 'Valentina López', fecha: '2026-05-07', hora: '09:30', zona: 'OTROS', responsable: 'Juan García', estado: 'completado', modalidad: 'virtual', notas: '' }
+        ];
+
+        visits = [...datosEjemplo];
+        nextId = 9;
 
         // Cargar Excel
         document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -870,15 +1178,15 @@
 
                     visits = jsonData.map((row, idx) => ({
                         id: idx + 1,
-                        empresa: String(row['Empresa'] || row['empresa'] || '').trim(),
-                        contacto: String(row['Contacto'] || row['contacto'] || '').trim(),
-                        fecha: formatDateForInput(row['Fecha'] || row['fecha'] || ''),
-                        hora: String(row['Hora'] || row['hora'] || '').trim(),
-                        zona: String(row['Zona'] || row['zona'] || '').trim(),
-                        responsable: String(row['Responsable'] || row['responsable'] || '').trim(),
-                        estado: String(row['Estado'] || row['estado'] || 'pendiente').toLowerCase().trim(),
-                        modalidad: String(row['Modalidad'] || row['modalidad'] || 'presencial').toLowerCase().trim(),
-                        notas: String(row['Notas'] || row['notas'] || '').trim()
+                        empresa: String(row['Empresa'] || '').trim(),
+                        contacto: String(row['Contacto'] || '').trim(),
+                        fecha: formatDateForInput(row['Fecha'] || ''),
+                        hora: String(row['Hora'] || '').trim(),
+                        zona: String(row['Zona'] || '').trim(),
+                        responsable: String(row['Responsable'] || '').trim(),
+                        estado: String(row['Estado'] || 'pendiente').toLowerCase().trim(),
+                        modalidad: String(row['Modalidad'] || 'presencial').toLowerCase().trim(),
+                        notas: String(row['Notas'] || '').trim()
                     })).filter(v => v.empresa);
 
                     nextId = Math.max(...visits.map(v => v.id), 0) + 1;
@@ -906,9 +1214,11 @@
         function getFiltered() {
             const modalidad = document.getElementById('filterModalidad').value;
             const tipo = document.getElementById('filterTipo').value;
+            const responsable = document.getElementById('filterResponsable').value;
             return visits.filter(v => {
                 if (modalidad && v.modalidad !== modalidad) return false;
                 if (tipo && v.tipo !== tipo) return false;
+                if (responsable && v.responsable !== responsable) return false;
                 return true;
             });
         }
@@ -918,8 +1228,8 @@
             const total = filtered.length;
             const programadas = filtered.filter(v => v.estado !== 'pendiente').length;
             const sinprogramar = filtered.filter(v => v.estado === 'pendiente').length;
-            const completadas = filtered.filter(v => v.estado === 'realizada').length;
-            const pendientes = filtered.filter(v => v.estado !== 'realizada').length;
+            const completadas = filtered.filter(v => v.estado === 'completado').length;
+            const pendientes = filtered.filter(v => v.estado !== 'completado').length;
 
             document.getElementById('prog-total').textContent = total;
             document.getElementById('cum-total').textContent = total;
@@ -998,44 +1308,153 @@
             filtered.forEach(v => {
                 if (!zonas[v.zona]) zonas[v.zona] = { total: 0, completadas: 0 };
                 zonas[v.zona].total++;
-                if (v.estado === 'realizada') zonas[v.zona].completadas++;
+                if (v.estado === 'completado') zonas[v.zona].completadas++;
             });
 
             let html = '';
-            Object.entries(zonas).sort().forEach(([zona, data]) => {
-                const porcentaje = Math.round(data.completadas / data.total * 100);
+            const zonasOrdenadas = ['ANTIOQUIA', 'CENTRO', 'NORTE', 'OCCIDENTE', 'OTROS', 'ECUADOR'];
+            zonasOrdenadas.forEach(zona => {
+                const data = zonas[zona] || { total: 0, completadas: 0 };
+                const porcentaje = data.total > 0 ? Math.round(data.completadas / data.total * 100) : 0;
                 html += `
                     <div class="zona-item">
-                        <div class="zona-name">${zona || 'SIN ZONA'}</div>
+                        <div class="zona-name">${zona}</div>
                         <div class="zona-bar">
-                            <div class="zona-fill ${porcentaje === 0 ? 'empty' : ''}" style="width: ${Math.max(porcentaje, 10)}%"></div>
+                            <div class="zona-fill" style="width: ${Math.max(porcentaje, 5)}%"></div>
                         </div>
                         <div class="zona-percent">${porcentaje}%</div>
                     </div>
                 `;
             });
 
-            if (html) {
-                html += `
-                    <div class="zona-legend">
-                        <div class="zona-legend-item">
-                            <div class="legend-color" style="background: #1e88e5;"></div>
-                            <span>Completado</span>
-                        </div>
-                        <div class="zona-legend-item">
-                            <div class="legend-color" style="background: #e0e0e0;"></div>
-                            <span>Pendiente</span>
-                        </div>
+            html += `
+                <div class="zona-legend">
+                    <div class="zona-legend-item">
+                        <div class="legend-color" style="background: #1e88e5;"></div>
+                        <span>Completado</span>
                     </div>
-                `;
+                    <div class="zona-legend-item">
+                        <div class="legend-color" style="background: #e0e0e0;"></div>
+                        <span>Pendiente</span>
+                    </div>
+                    <span style="margin: 0 10px;">|</span>
+                    <span>Completados / Total</span>
+                </div>
+            `;
+
+            document.getElementById('zonasContainer').innerHTML = html;
+        }
+
+        function renderResponsables() {
+            const sel = document.getElementById('filterResponsable');
+            const cur = sel.value;
+            const resps = [...new Set(visits.map(v => v.responsable).filter(Boolean))].sort();
+            sel.innerHTML = '<option value="">Todos</option>' + resps.map(r => `<option value="${r}"${cur === r ? ' selected' : ''}>${r}</option>`).join('');
+        }
+
+        function renderTable() {
+            const filtered = getFiltered().sort((a, b) => a.fecha.localeCompare(b.fecha));
+            const html = filtered.map(v => `
+                <tr>
+                    <td>${formatDate(v.fecha)}</td>
+                    <td><strong>${v.zona}</strong></td>
+                    <td>${v.responsable}</td>
+                    <td>${v.empresa}</td>
+                    <td><span class="badge-estado badge-${v.estado}">${v.estado === 'completado' ? 'Completado' : 'Pendiente'}</span></td>
+                    <td>${capitalize(v.modalidad)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('tableBody').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">Sin datos</td></tr>';
+        }
+
+        function renderCalendar() {
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('monthTitle').textContent = meses[currentMonth] + ' ' + currentYear;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const filtered = getFiltered();
+
+            let html = '';
+            const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayNames.forEach(day => {
+                html += `<div class="cal-day-header">${day}</div>`;
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="cal-day"></div>`;
             }
 
-            document.getElementById('zonasContainer').innerHTML = html || '<p style="text-align:center;color:#999;">Sin datos</p>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                const hasEvents = filtered.some(v => v.fecha === dateStr);
+                html += `<div class="cal-day ${hasEvents ? 'has-events' : ''}">${day}${hasEvents ? '<div style="font-size:10px;color:#1e88e5;">●</div>' : ''}</div>`;
+            }
+
+            document.getElementById('calendarGrid').innerHTML = html;
+        }
+
+        function renderGantt() {
+            const filtered = getFiltered().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            const responsables = [...new Set(filtered.map(v => v.responsable))].sort();
+
+            let html = '';
+            responsables.forEach(resp => {
+                const visitsResp = filtered.filter(v => v.responsable === resp);
+                if (visitsResp.length > 0) {
+                    html += '<div style="margin-bottom: 20px;">';
+                    visitsResp.forEach(v => {
+                        const fecha = new Date(v.fecha);
+                        const ancho = 10 + Math.random() * 15;
+                        html += `
+                            <div class="gantt-row">
+                                <div class="gantt-label">${v.empresa}</div>
+                                <div class="gantt-bar-container">
+                                    <div class="gantt-bar ${v.estado}" style="width: ${ancho}%; left: ${Math.random() * 60}%;" title="${v.empresa} - ${formatDate(v.fecha)}"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+            });
+
+            document.getElementById('ganttChart').innerHTML = html || '<p style="text-align:center;color:#999;">Sin datos</p>';
         }
 
         function render() {
             renderCharts();
             renderZonas();
+            renderResponsables();
+            renderTable();
+            renderCalendar();
+            renderGantt();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
         }
 
         function openModal() {
@@ -1075,7 +1494,7 @@
                 contacto: document.getElementById('fContacto').value.trim(),
                 fecha,
                 hora: document.getElementById('fHora').value,
-                zona: document.getElementById('fZona').value.trim(),
+                zona: document.getElementById('fZona').value,
                 responsable: document.getElementById('fResp').value.trim(),
                 estado: document.getElementById('fEstado').value,
                 modalidad: document.getElementById('fModalidad').value,
@@ -1120,6 +1539,16 @@
             showAlert('✅ Excel descargado', 'success');
         }
 
+        function formatDate(d) {
+            if (!d) return '—';
+            const [y, m, dd] = d.split('-');
+            return `${dd}/${m}/${y}`;
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
         function showAlert(msg, type) {
             const box = document.getElementById('alertBox');
             const alert = document.createElement('div');
@@ -1132,6 +1561,7 @@
 
         document.getElementById('filterModalidad').addEventListener('change', render);
         document.getElementById('filterTipo').addEventListener('change', render);
+        document.getElementById('filterResponsable').addEventListener('change', render);
 
         render();
     </script>
