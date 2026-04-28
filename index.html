@@ -578,19 +578,19 @@
         }
 
         .cal-day {
-            aspect-ratio: 1;
+            min-height: 120px;
             border: 1px solid #e8f5e9;
             border-radius: 8px;
-            padding: 8px;
-            text-align: center;
+            padding: 4px;
             font-size: 13px;
             cursor: pointer;
             transition: all 0.3s;
             background: #f9f9f9;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
+            justify-content: flex-start;
+            overflow-y: auto;
         }
 
         .cal-day:hover {
@@ -652,6 +652,23 @@
         .badge-pendiente {
             background: #fff9c4;
             color: #f57f17;
+        }
+
+        .btn-observaciones {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: #2e7d32;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-observaciones:hover {
+            background: #1b5e20;
+            transform: scale(1.05);
         }
 
         /* ===== GANTT ===== */
@@ -913,20 +930,15 @@
                     <option value="">Todos</option>
                 </select>
             </div>
+            <label for="fileInput" class="btn-actualizar" style="margin:0;background:#e8f5e9;color:#1b5e20;border:2px solid #1b5e20;">📁 Cargar</label>
+            <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" style="display:none;">
+            <button class="btn-actualizar" style="background:#43a047;color:white;border:none;" onclick="downloadExcel()">💾 Descargar</button>
+            <button class="btn-actualizar" onclick="render()">🔄 Actualizar</button>
         </div>
-
-        <button class="btn-actualizar" onclick="render()">🔄 Actualizar Información</button>
     </div>
 
     <div class="container">
         <div id="alertBox"></div>
-
-        <div class="toolbar">
-            <label for="fileInput" class="btn-tool">📁 Cargar Excel</label>
-            <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
-            <button class="btn-tool" onclick="downloadExcel()">💾 Descargar Excel</button>
-            <button class="btn-tool" onclick="openModal()">➕ Nueva Visita</button>
-        </div>
 
         <!-- Dashboard Principal -->
         <div class="dashboard">
@@ -939,8 +951,8 @@
                 <div class="chart-container">
                     <canvas id="chartProgramacion"></canvas>
                     <div class="donut-center">
-                        <div class="donut-value" id="prog-total">0</div>
-                        <div class="donut-label">Total</div>
+                        <div class="donut-value" id="prog-porcentaje">0%</div>
+                        <div class="donut-label">Programadas</div>
                     </div>
                 </div>
                 <div class="card-stats">
@@ -974,8 +986,8 @@
                 <div class="chart-container">
                     <canvas id="chartCumplimiento"></canvas>
                     <div class="donut-center">
-                        <div class="donut-value" id="cum-total">0</div>
-                        <div class="donut-label">Total</div>
+                        <div class="donut-value" id="cum-porcentaje">0%</div>
+                        <div class="donut-label">Completadas</div>
                     </div>
                 </div>
                 <div class="card-stats">
@@ -1021,12 +1033,14 @@
             </div>
             <div class="divider"></div>
             <div class="kpi-item">
-                <div class="kpi-icon">📊</div>
+                <div class="kpi-icon">⏳</div>
                 <div class="kpi-content">
-                    <div class="kpi-label">Porcentaje de Avance</div>
-                    <div class="kpi-value" id="kpi-avance">0%</div>
+                    <div class="kpi-label">Horas por Sesión</div>
+                    <div class="kpi-value" id="kpi-horas">0 h</div>
                 </div>
             </div>
+            <div class="divider"></div>
+            <button class="btn-actualizar" style="background:#1b5e20;color:white;border:none;padding:12px 20px;font-size:13px;" onclick="openModal()">➕ Nueva Visita</button>
             <div class="footer-text">
                 Información actualizada al momento de la consulta
             </div>
@@ -1060,8 +1074,10 @@
                                 <th>Zona</th>
                                 <th>Responsable</th>
                                 <th>Empresa</th>
+                                <th>Tipo</th>
                                 <th>Estado</th>
                                 <th>Modalidad</th>
+                                <th>Observaciones</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -1083,11 +1099,11 @@
             <div class="modal-grid">
                 <div class="field">
                     <label>Empresa *</label>
-                    <input id="fEmpresa" type="text" placeholder="Ej: GR">
+                    <input id="fEmpresa" type="text" placeholder="Ej: Bancolombia">
                 </div>
                 <div class="field">
                     <label>Contacto</label>
-                    <input id="fContacto" type="text" placeholder="Ej: Jeison Hurtado">
+                    <input id="fContacto" type="text" placeholder="Ej: Juan Pérez">
                 </div>
                 <div class="field">
                     <label>Fecha *</label>
@@ -1111,7 +1127,15 @@
                 </div>
                 <div class="field">
                     <label>Responsable</label>
-                    <input id="fResp" type="text" placeholder="Ej: Jeison Hurtado">
+                    <input id="fResp" type="text" placeholder="Ej: Laura Torres">
+                </div>
+                <div class="field">
+                    <label>Tipo de Acompañamiento</label>
+                    <select id="fTipo">
+                        <option value="">Seleccionar</option>
+                        <option value="blanco">En blanco</option>
+                        <option value="vu">VÚ / SV</option>
+                    </select>
                 </div>
                 <div class="field">
                     <label>Estado</label>
@@ -1150,7 +1174,14 @@
 
         // Datos de ejemplo
         const datosEjemplo = [
-            { id: 8, empresa: 'GR', contacto: 'Jeison Hurtado', fecha: '2026-05-07', hora: '09:30', zona: 'CENTRO', responsable: 'Jeison Hurtado', estado: 'completado', modalidad: 'virtual', notas: '' }
+            { id: 1, empresa: 'Bancolombia', contacto: 'Ana García', fecha: '2026-04-28', hora: '10:00', zona: 'CENTRO', responsable: 'Laura Torres', tipo: 'blanco', estado: 'completado', modalidad: 'presencial', notas: '' },
+            { id: 2, empresa: 'Grupo Éxito', contacto: 'Carlos López', fecha: '2026-04-29', hora: '14:30', zona: 'ANTIOQUIA', responsable: 'Juan García', tipo: 'vu', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 3, empresa: 'Cemex Colombia', contacto: 'Marta Ríos', fecha: '2026-05-05', hora: '09:00', zona: 'NORTE', responsable: 'Pedro Lima', tipo: 'blanco', estado: 'completado', modalidad: 'virtual', notas: '' },
+            { id: 4, empresa: 'Avianca', contacto: 'Sandra Niño', fecha: '2026-05-08', hora: '11:00', zona: 'OCCIDENTE', responsable: 'Laura Torres', tipo: 'vu', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 5, empresa: 'Alpina', contacto: 'Roberto Silva', fecha: '2026-05-10', hora: '15:00', zona: 'ECUADOR', responsable: 'Juan García', tipo: 'blanco', estado: 'pendiente', modalidad: 'virtual', notas: '' },
+            { id: 6, empresa: 'Telefonica', contacto: 'Diana Martínez', fecha: '2026-04-30', hora: '13:00', zona: 'CENTRO', responsable: 'Pedro Lima', tipo: 'vu', estado: 'completado', modalidad: 'presencial', notas: '' },
+            { id: 7, empresa: 'Bavaria', contacto: 'Andrés Gómez', fecha: '2026-05-03', hora: '10:30', zona: 'ANTIOQUIA', responsable: 'Laura Torres', tipo: 'blanco', estado: 'pendiente', modalidad: 'presencial', notas: '' },
+            { id: 8, empresa: 'Colpatria', contacto: 'Valentina López', fecha: '2026-05-07', hora: '09:30', zona: 'OTROS', responsable: 'Juan García', tipo: 'vu', estado: 'completado', modalidad: 'virtual', notas: '' }
         ];
 
         visits = [...datosEjemplo];
@@ -1177,6 +1208,7 @@
                         hora: String(row['Hora'] || '').trim(),
                         zona: String(row['Zona'] || '').trim(),
                         responsable: String(row['Responsable'] || '').trim(),
+                        tipo: String(row['Tipo'] || '').trim(),
                         estado: String(row['Estado'] || 'pendiente').toLowerCase().trim(),
                         modalidad: String(row['Modalidad'] || 'presencial').toLowerCase().trim(),
                         notas: String(row['Notas'] || '').trim()
@@ -1224,21 +1256,25 @@
             const completadas = filtered.filter(v => v.estado === 'completado').length;
             const pendientes = filtered.filter(v => v.estado !== 'completado').length;
 
-            document.getElementById('prog-total').textContent = total;
-            document.getElementById('cum-total').textContent = total;
-            document.getElementById('prog-programadas').textContent = `${programadas} (${total > 0 ? Math.round(programadas/total*100) : 0}%)`;
+            const progPorcentaje = total > 0 ? Math.round(programadas / total * 100) : 0;
+            const cumPorcentaje = total > 0 ? Math.round(completadas / total * 100) : 0;
+
+            document.getElementById('prog-porcentaje').textContent = progPorcentaje + '%';
+            document.getElementById('cum-porcentaje').textContent = cumPorcentaje + '%';
+            document.getElementById('prog-programadas').textContent = `${programadas} (${progPorcentaje}%)`;
             document.getElementById('prog-sinprogramar').textContent = `${sinprogramar} (${total > 0 ? Math.round(sinprogramar/total*100) : 0}%)`;
-            document.getElementById('cum-completado').textContent = `${completadas} (${total > 0 ? Math.round(completadas/total*100) : 0}%)`;
+            document.getElementById('cum-completado').textContent = `${completadas} (${cumPorcentaje}%)`;
             document.getElementById('cum-pendiente').textContent = `${pendientes} (${total > 0 ? Math.round(pendientes/total*100) : 0}%)`;
 
             // KPIs
             const firstDate = filtered.length > 0 ? new Date(Math.min(...filtered.map(v => new Date(v.fecha)))) : new Date();
             const lastDate = filtered.length > 0 ? new Date(Math.max(...filtered.map(v => new Date(v.fecha)))) : new Date();
-            const duracion = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-            const porcentajeAvance = total > 0 ? Math.round(completadas / total * 100) : 0;
+            const duracionDias = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+            const duracionHoras = (duracionDias * 24).toFixed(1);
+            const horasPorSesion = total > 0 ? (duracionHoras / total).toFixed(1) : 0;
 
-            document.getElementById('kpi-duracion').textContent = duracion + ' días';
-            document.getElementById('kpi-avance').textContent = porcentajeAvance + '%';
+            document.getElementById('kpi-duracion').textContent = duracionHoras + ' h';
+            document.getElementById('kpi-horas').textContent = horasPorSesion + ' h';
 
             // Gráfico Programación
             const ctxProg = document.getElementById('chartProgramacion').getContext('2d');
@@ -1353,12 +1389,14 @@
                     <td><strong>${v.zona}</strong></td>
                     <td>${v.responsable}</td>
                     <td>${v.empresa}</td>
+                    <td>${v.tipo || '—'}</td>
                     <td><span class="badge-estado badge-${v.estado}">${v.estado === 'completado' ? 'Completado' : 'Pendiente'}</span></td>
                     <td>${capitalize(v.modalidad)}</td>
+                    <td><button class="btn-observaciones" onclick="showObservaciones('${v.id}', '${v.empresa}', '${v.notas}')">📝 Ver</button></td>
                 </tr>
             `).join('');
 
-            document.getElementById('tableBody').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">Sin datos</td></tr>';
+            document.getElementById('tableBody').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:20px;color:#999;">Sin datos</td></tr>';
         }
 
         function renderCalendar() {
@@ -1381,8 +1419,20 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-                const hasEvents = filtered.some(v => v.fecha === dateStr);
-                html += `<div class="cal-day ${hasEvents ? 'has-events' : ''}">${day}${hasEvents ? '<div style="font-size:10px;color:#1e88e5;">●</div>' : ''}</div>`;
+                const dayVisits = filtered.filter(v => v.fecha === dateStr);
+                const hasEvents = dayVisits.length > 0;
+                
+                let visitsHtml = '';
+                dayVisits.forEach(v => {
+                    visitsHtml += `<div style="font-size:9px;padding:2px;background:#1e88e5;color:white;border-radius:3px;margin:1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${v.empresa}">
+                        <strong>${v.empresa}</strong><br>${v.responsable || '—'}<br>${v.tipo || '—'}<br>${v.hora || '—'}
+                    </div>`;
+                });
+
+                html += `<div class="cal-day ${hasEvents ? 'has-events' : ''}" onclick="openModal('${dateStr}')" style="cursor:pointer;padding:4px;overflow-y:auto;">
+                    <div style="font-size:11px;font-weight:600;margin-bottom:4px;">${day}</div>
+                    ${visitsHtml}
+                </div>`;
             }
 
             document.getElementById('calendarGrid').innerHTML = html;
@@ -1390,30 +1440,51 @@
 
         function renderGantt() {
             const filtered = getFiltered().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-            const responsables = [...new Set(filtered.map(v => v.responsable))].sort();
+            if (filtered.length === 0) {
+                document.getElementById('ganttChart').innerHTML = '<p style="text-align:center;color:#999;">Sin datos</p>';
+                return;
+            }
 
-            let html = '';
+            const responsables = [...new Set(filtered.map(v => v.responsable))].sort();
+            const minDate = new Date(Math.min(...filtered.map(v => new Date(v.fecha))));
+            const maxDate = new Date(Math.max(...filtered.map(v => new Date(v.fecha))));
+            const totalDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            let html = '<div style="overflow-x: auto;">';
+            html += '<div style="display: flex; min-width: 100%; gap: 10px;">';
+            html += '<div style="width: 150px; flex-shrink: 0;"></div>';
+            
+            // Encabezados de fechas
+            html += '<div style="display: flex; gap: 2px;">';
+            for (let i = 0; i < totalDays; i++) {
+                const d = new Date(minDate.getTime() + i * 24 * 60 * 60 * 1000);
+                html += `<div style="min-width: 40px; font-size: 10px; text-align: center; color: #999; padding: 4px;">${d.getDate()}</div>`;
+            }
+            html += '</div></div>';
+
+            // Filas por responsable
             responsables.forEach(resp => {
                 const visitsResp = filtered.filter(v => v.responsable === resp);
-                if (visitsResp.length > 0) {
-                    html += '<div style="margin-bottom: 20px;">';
-                    visitsResp.forEach(v => {
-                        const fecha = new Date(v.fecha);
-                        const ancho = 10 + Math.random() * 15;
-                        html += `
-                            <div class="gantt-row">
-                                <div class="gantt-label">${v.empresa}</div>
-                                <div class="gantt-bar-container">
-                                    <div class="gantt-bar ${v.estado}" style="width: ${ancho}%; left: ${Math.random() * 60}%;" title="${v.empresa} - ${formatDate(v.fecha)}"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
+                html += '<div style="display: flex; gap: 10px; margin-bottom: 20px;">';
+                html += `<div style="width: 150px; flex-shrink: 0; padding: 8px 0; font-weight: 600; font-size: 12px;">${resp}</div>`;
+                html += '<div style="display: flex; gap: 2px;">';
+
+                for (let i = 0; i < totalDays; i++) {
+                    const d = new Date(minDate.getTime() + i * 24 * 60 * 60 * 1000);
+                    const dateStr = d.toISOString().split('T')[0];
+                    const visit = visitsResp.find(v => v.fecha === dateStr);
+                    
+                    if (visit) {
+                        html += `<div style="min-width: 40px; height: 24px; background: linear-gradient(90deg, #43a047 0%, #2e7d32 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; font-weight: 600;" title="${visit.empresa}">●</div>`;
+                    } else {
+                        html += `<div style="min-width: 40px; height: 24px; background: #f0f0f0; border-radius: 4px;"></div>`;
+                    }
                 }
+                html += '</div></div>';
             });
 
-            document.getElementById('ganttChart').innerHTML = html || '<p style="text-align:center;color:#999;">Sin datos</p>';
+            html += '</div>';
+            document.getElementById('ganttChart').innerHTML = html;
         }
 
         function render() {
@@ -1450,15 +1521,16 @@
             renderCalendar();
         }
 
-        function openModal() {
+        function openModal(fecha = '') {
             editId = null;
             document.getElementById('modalTitle').textContent = 'Nueva Visita';
             document.getElementById('fEmpresa').value = '';
             document.getElementById('fContacto').value = '';
-            document.getElementById('fFecha').value = '';
+            document.getElementById('fFecha').value = fecha;
             document.getElementById('fHora').value = '';
             document.getElementById('fZona').value = '';
             document.getElementById('fResp').value = '';
+            document.getElementById('fTipo').value = '';
             document.getElementById('fEstado').value = 'pendiente';
             document.getElementById('fModalidad').value = 'presencial';
             document.getElementById('fNotas').value = '';
@@ -1489,6 +1561,7 @@
                 hora: document.getElementById('fHora').value,
                 zona: document.getElementById('fZona').value,
                 responsable: document.getElementById('fResp').value.trim(),
+                tipo: document.getElementById('fTipo').value,
                 estado: document.getElementById('fEstado').value,
                 modalidad: document.getElementById('fModalidad').value,
                 notas: document.getElementById('fNotas').value.trim()
@@ -1519,6 +1592,7 @@
                 'Hora': v.hora,
                 'Zona': v.zona,
                 'Responsable': v.responsable,
+                'Tipo': v.tipo,
                 'Estado': v.estado,
                 'Modalidad': v.modalidad,
                 'Notas': v.notas
@@ -1538,8 +1612,22 @@
             return `${dd}/${m}/${y}`;
         }
 
-        function capitalize(s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
+        function showObservaciones(id, empresa, notas) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:101;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:16px;padding:28px;width:500px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+                    <h3 style="font-size:18px;font-weight:700;color:#1b5e20;margin-bottom:16px;border-bottom:2px solid #e8f5e9;padding-bottom:12px;">Observaciones - ${empresa}</h3>
+                    <div style="background:#f9f9f9;padding:16px;border-radius:8px;border:1px solid #e8f5e9;min-height:100px;margin-bottom:16px;font-size:13px;color:#333;line-height:1.6;">
+                        ${notas || '<span style="color:#999;font-style:italic;">Sin observaciones registradas</span>'}
+                    </div>
+                    <div style="text-align:right;">
+                        <button onclick="this.closest('[style*=position]').remove()" style="padding:10px 20px;border-radius:8px;border:none;background:#2e7d32;color:white;cursor:pointer;font-weight:600;">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
         }
 
         function showAlert(msg, type) {
