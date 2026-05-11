@@ -906,22 +906,20 @@
             </div>
         </div>
 
-        <div class="header-filters">
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; flex: 1;">
             <div class="filter-group">
                 <label>Modalidad</label>
                 <select id="filterModalidad">
                     <option value="">Todas</option>
                     <option value="presencial">Presencial</option>
                     <option value="virtual">Virtual</option>
-                    <option value="sin_programar">Sin programar</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Tipo de acompañamiento</label>
                 <select id="filterTipo">
                     <option value="">Todos</option>
-                    <option value="blanco">En blanco</option>
-                    <option value="vu">VÚ / SV</option>
+                    <option value="Verdad única">Verdad única</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -930,10 +928,9 @@
                     <option value="">Todos</option>
                 </select>
             </div>
-            <label for="fileInput" class="btn-actualizar" style="margin:0;background:#e8f5e9;color:#1b5e20;border:2px solid #1b5e20;">📁 Cargar</label>
+            <label for="fileInput" class="btn-actualizar" style="margin:0;background:#e8f5e9;color:#1b5e20;border:2px solid #1b5e20;cursor:pointer;">📁 Cargar</label>
             <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" style="display:none;">
             <button class="btn-actualizar" style="background:#43a047;color:white;border:none;" onclick="downloadExcel()">💾 Descargar</button>
-            <button class="btn-actualizar" onclick="render()">🔄 Actualizar</button>
         </div>
     </div>
 
@@ -1028,10 +1025,9 @@
                 <div class="kpi-icon">⏱️</div>
                 <div class="kpi-content">
                     <div class="kpi-label">Duración Real</div>
-                    <div class="kpi-value" id="kpi-duracion">0 días</div>
+                    <div class="kpi-value" id="kpi-duracion">0 h</div>
                 </div>
             </div>
-            <div class="divider"></div>
             <div class="kpi-item">
                 <div class="kpi-icon">⏳</div>
                 <div class="kpi-content">
@@ -1039,11 +1035,7 @@
                     <div class="kpi-value" id="kpi-horas">0 h</div>
                 </div>
             </div>
-            <div class="divider"></div>
-            <button class="btn-actualizar" style="background:#1b5e20;color:white;border:none;padding:12px 20px;font-size:13px;" onclick="openModal()">➕ Nueva Visita</button>
-            <div class="footer-text">
-                Información actualizada al momento de la consulta
-            </div>
+            <button class="btn-actualizar" style="background:#1b5e20;color:white;border:none;padding:12px 20px;font-size:13px;height:fit-content;margin-left:auto;" onclick="openModal()">➕ Nueva Visita</button>
         </div>
 
         <!-- Tabs Section -->
@@ -1174,14 +1166,65 @@
 
         // Datos de ejemplo
         const datosEjemplo = [
-            { id: 1, empresa: 'Bancolombia', contacto: 'Ana García', fecha: '2026-04-28', hora: '10:00', zona: 'CENTRO', responsable: 'Laura Torres', tipo: 'blanco', estado: 'completado', modalidad: 'presencial', notas: '' },
-            { id: 2, empresa: 'Grupo Éxito', contacto: 'Carlos López', fecha: '2026-04-29', hora: '14:30', zona: 'ANTIOQUIA', responsable: 'Juan García', tipo: 'vu', estado: 'pendiente', modalidad: 'presencial', notas: '' },
-            { id: 3, empresa: 'Cemex Colombia', contacto: 'Marta Ríos', fecha: '2026-05-05', hora: '09:00', zona: 'NORTE', responsable: 'Pedro Lima', tipo: 'blanco', estado: 'completado', modalidad: 'virtual', notas: '' },
-            { id: 4, empresa: 'Avianca', contacto: 'Sandra Niño', fecha: '2026-05-08', hora: '11:00', zona: 'OCCIDENTE', responsable: 'Laura Torres', tipo: 'vu', estado: 'pendiente', modalidad: 'presencial', notas: '' },
-            { id: 5, empresa: 'Alpina', contacto: 'Roberto Silva', fecha: '2026-05-10', hora: '15:00', zona: 'ECUADOR', responsable: 'Juan García', tipo: 'blanco', estado: 'pendiente', modalidad: 'virtual', notas: '' },
-            { id: 6, empresa: 'Telefonica', contacto: 'Diana Martínez', fecha: '2026-04-30', hora: '13:00', zona: 'CENTRO', responsable: 'Pedro Lima', tipo: 'vu', estado: 'completado', modalidad: 'presencial', notas: '' },
-            { id: 7, empresa: 'Bavaria', contacto: 'Andrés Gómez', fecha: '2026-05-03', hora: '10:30', zona: 'ANTIOQUIA', responsable: 'Laura Torres', tipo: 'blanco', estado: 'pendiente', modalidad: 'presencial', notas: '' },
-            { id: 8, empresa: 'Colpatria', contacto: 'Valentina López', fecha: '2026-05-07', hora: '09:30', zona: 'OTROS', responsable: 'Juan García', tipo: 'vu', estado: 'completado', modalidad: 'virtual', notas: '' }
+            { id: 1, empresa: 'TN', contacto: 'MARIN FERREIRA ANA MARIA', fecha: '2026-05-15', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 2, empresa: 'PM', contacto: 'QUIÑONEZ LOPEZ KAREN LORENA', fecha: '2026-05-15', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 3, empresa: 'FV', contacto: 'AVILA GUZMAN MIGUEL ENRIQUE', fecha: '2026-05-13', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 4, empresa: 'Z5', contacto: 'AVILA GUZMAN MIGUEL ENRIQUE', fecha: '2026-05-13', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 5, empresa: 'UB', contacto: 'BALLEN VARGAS MARTHA LILIANA', fecha: '2026-05-13', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 6, empresa: 'TM', contacto: 'MAYRA ALEJANDRA AGUIRRE MUÑOZ', fecha: '2026-04-23', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 7, empresa: 'AL', contacto: 'GUERRERO RODRIGUEZ ERIKA YINETH', fecha: '2026-05-19', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 8, empresa: 'QA', contacto: 'MONCADA MONCADA OLGA BEATRIZ', fecha: '2026-05-19', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 9, empresa: 'ER', contacto: 'RODRIGUEZ PAPAGAYO JORGE HUMBERTO', fecha: '2026-05-20', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 10, empresa: 'QF', contacto: 'PASTRAN OVALLE NATALIA', fecha: '2026-05-20', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 11, empresa: 'CP', contacto: 'ROMERO HERNANDEZ OLGA MIREYA', fecha: '2026-05-22', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 12, empresa: 'LM', contacto: 'TORRES LARA DELIA CONSTANZA', fecha: '2026-05-22', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 13, empresa: 'PL', contacto: 'PACHON MATIZ NANNCY YOLIMA', fecha: '2026-05-26', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 14, empresa: 'PP', contacto: 'VARILA GALVIZ MARIA FERNANDA', fecha: '2026-05-26', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 15, empresa: 'Z3', contacto: 'VARILA GALVIZ MARIA FERNANDA', fecha: '2026-05-26', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 16, empresa: 'LN', contacto: 'GONZALEZ GOMEZ SANDRA MILENA', fecha: '2026-05-04', hora: '08:00', zona: 'NORTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 17, empresa: 'SC', contacto: 'FABIO VARGAS OSORIO', fecha: '2026-05-29', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 18, empresa: 'RQ', contacto: 'PINZON CAMELO MONICA', fecha: '2026-05-29', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 19, empresa: 'RF', contacto: 'AHUMADA VILLALBA SANDRA PATRICIA', fecha: '2026-06-03', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 20, empresa: 'CH', contacto: 'GAMBOA ADRIAZNA MARCELA', fecha: '2026-06-03', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 21, empresa: 'CG', contacto: 'ROBLES ROZO CLAUDIA NAYIBE', fecha: '2026-06-05', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 22, empresa: 'HA', contacto: 'MONTOYA CARDENAS MONICA VIVIANA', fecha: '2026-06-09', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 23, empresa: 'MG', contacto: 'ESPINOSA HUERFANO VIVIANA MARCELA', fecha: '2026-06-09', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 24, empresa: 'JA', contacto: 'QUINTERO GALINDO LILIANA', fecha: '2026-06-12', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 25, empresa: 'FG', contacto: 'AHUMADA VILLALBA SANDRA PATRICIA', fecha: '2026-06-16', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 26, empresa: 'FA', contacto: 'GARZON RODRIGUEZ DIANA CAROLINA', fecha: '2026-06-16', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 27, empresa: 'AB', contacto: 'BUITRAGO CARANTON JUDY PAOLA', fecha: '2026-06-19', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 28, empresa: 'SZ', contacto: 'GUAYAMBUCO SARMIENTO LAURA TATIANA', fecha: '2026-06-19', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 29, empresa: 'SB', contacto: 'BARACALDO MARTINEZ DIANA DEL PILAR', fecha: '2026-06-24', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 30, empresa: 'FL', contacto: 'CLAVIJO GUTIERREZ ANGELICA YADIRA', fecha: '2026-04-30', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 31, empresa: 'AJ', contacto: 'OSORIO FONSECA DIANA CRISTINA', fecha: '2026-06-26', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 32, empresa: 'LC', contacto: 'MORENO COLORADO SANDRA CATHERINE', fecha: '2026-06-26', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 33, empresa: 'SN', contacto: 'PADILLA ROMERO YADIRA ISABEL', fecha: '2026-06-30', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 34, empresa: 'MO', contacto: 'HERNANDEZ TRIANA RODOLFO', fecha: '2026-06-30', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 35, empresa: 'ZK', contacto: 'MORA SALCEDO CONSTANZA', fecha: '2026-07-01', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 36, empresa: 'FF-ADM', contacto: 'QUINTANA SANCHEZ YULIANDRI', fecha: '2026-07-01', hora: '08:00', zona: 'OCCIDENTE', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 37, empresa: 'BG', contacto: 'MAHECHA MUÑOZ MARICELA', fecha: '2026-07-08', hora: '08:00', zona: 'OTROS', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 38, empresa: 'PA', contacto: 'MENDEZ GARNICA DIANA CATHERINE', fecha: '2026-07-08', hora: '08:00', zona: 'OTROS', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 39, empresa: 'ZA', contacto: 'CASALLAS NANCY JANNETH', fecha: '2026-07-10', hora: '08:00', zona: 'OTROS', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 40, empresa: 'Z1', contacto: 'SANCHEZ FONTECHA SINDI BRIDGI', fecha: '2026-07-14', hora: '08:00', zona: 'CENTRO', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 41, empresa: 'JS', contacto: 'SOTO GIL MONICA YULIETH', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 42, empresa: 'FE', contacto: 'ALZATE CASTAÑO MARIA CRISTINA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 43, empresa: 'HC', contacto: 'ARANGO ARANGO OSCAR ARMANDO', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 44, empresa: 'IS', contacto: 'ALZATE CASTAÑO MARIA CRISTINA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 45, empresa: 'JQ', contacto: 'FAJARDO GRISALES ERIKA TATIANA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 46, empresa: 'JU', contacto: 'FAJARDO GRISALES ERIKA TATIANA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 47, empresa: 'MT', contacto: 'AGUDELO RAMIREZ ALBA DORIS', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 48, empresa: 'OL', contacto: 'ARANGO ARANGO OSCAR ARMANDO', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 49, empresa: 'TR', contacto: 'SANCHEZ GOMEZ SILVIA CRISTINA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 50, empresa: 'IB', contacto: 'SARMIENTO CENTENO CAREN VIVIANA', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 51, empresa: 'LV', contacto: 'YEPES PATIÑO MARIA ISABEL', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 52, empresa: 'JN', contacto: 'CARMONA BEDOYA MARLENY', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 53, empresa: 'JP', contacto: 'VARGAS GIL DEISY', fecha: '2026-07-30', hora: '08:00', zona: 'ANTIOQUIA', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 54, empresa: 'CW', contacto: 'SALAZAR CRUZ DENNIS RENATO', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 55, empresa: 'FS', contacto: 'GOMEZ VASQUEZ JISSELA DE LOS ANGELES', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 56, empresa: 'MB', contacto: 'AVILA ARMIJOS MARCO VINICIO', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 57, empresa: 'MN', contacto: 'ESCOLA SANDOVAL JENNY ELIZABETH', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 58, empresa: 'SM', contacto: 'JARAMILLO TORRES ALEX DANIEL', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' },
+            { id: 59, empresa: 'ZE', contacto: 'MANTILLA FERNANDO', fecha: '2026-07-30', hora: '08:00', zona: 'ECUADOR', responsable: 'Jeison Hurtado', tipo: 'Verdad única', estado: 'pendiente', modalidad: 'presencial', notas: 'Pendiente agendar' }
         ];
 
         visits = [...datosEjemplo];
@@ -1200,26 +1243,41 @@
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
+                    if (!jsonData || jsonData.length === 0) {
+                        showAlert('⚠️ El archivo está vacío o no tiene datos válidos', 'error');
+                        return;
+                    }
+
                     visits = jsonData.map((row, idx) => ({
                         id: idx + 1,
-                        empresa: String(row['Empresa'] || '').trim(),
-                        contacto: String(row['Contacto'] || '').trim(),
-                        fecha: formatDateForInput(row['Fecha'] || ''),
-                        hora: String(row['Hora'] || '').trim(),
-                        zona: String(row['Zona'] || '').trim(),
-                        responsable: String(row['Responsable'] || '').trim(),
-                        tipo: String(row['Tipo'] || '').trim(),
-                        estado: String(row['Estado'] || 'pendiente').toLowerCase().trim(),
-                        modalidad: String(row['Modalidad'] || 'presencial').toLowerCase().trim(),
-                        notas: String(row['Notas'] || '').trim()
+                        empresa: String(row['Empresa'] || row['empresa'] || '').trim(),
+                        contacto: String(row['Contacto'] || row['contacto'] || '').trim(),
+                        fecha: formatDateForInput(row['Fecha'] || row['fecha'] || ''),
+                        hora: String(row['Hora'] || row['hora'] || '').trim(),
+                        zona: String(row['Zona'] || row['zona'] || '').trim(),
+                        responsable: String(row['Responsable'] || row['responsable'] || '').trim(),
+                        tipo: String(row['Tipo'] || row['tipo'] || '').trim(),
+                        estado: String(row['Estado'] || row['estado'] || 'pendiente').toLowerCase().trim(),
+                        modalidad: String(row['Modalidad'] || row['modalidad'] || 'presencial').toLowerCase().trim(),
+                        notas: String(row['Notas'] || row['notas'] || '').trim()
                     })).filter(v => v.empresa);
 
+                    if (visits.length === 0) {
+                        showAlert('⚠️ No se encontraron registros con Empresa válida', 'error');
+                        return;
+                    }
+
                     nextId = Math.max(...visits.map(v => v.id), 0) + 1;
+                    populateFilters();
                     showAlert(`✅ Excel cargado con ${visits.length} registros`, 'success');
                     render();
                 } catch (err) {
-                    showAlert('❌ Error al leer el archivo', 'error');
+                    showAlert('❌ Error: ' + err.message, 'error');
+                    console.error(err);
                 }
+            };
+            reader.onerror = function() {
+                showAlert('❌ Error al leer el archivo', 'error');
             };
             reader.readAsArrayBuffer(file);
         });
@@ -1227,23 +1285,69 @@
         function formatDateForInput(dateStr) {
             if (!dateStr) return '';
             let date;
+            
+            // Si es un número (fecha de Excel)
             if (typeof dateStr === 'number') {
                 date = new Date((dateStr - 25569) * 86400 * 1000);
+            } 
+            // Si es una fecha válida como string
+            else if (typeof dateStr === 'string') {
+                // Intenta parsear como DD/MM/YYYY o YYYY-MM-DD
+                if (dateStr.includes('/')) {
+                    const [d, m, y] = dateStr.split('/');
+                    date = new Date(y, m - 1, d);
+                } else {
+                    date = new Date(dateStr);
+                }
             } else {
-                date = new Date(dateStr);
+                return '';
             }
-            if (isNaN(date)) return String(dateStr);
+            
+            // Validar que la fecha sea válida
+            if (isNaN(date.getTime())) {
+                console.warn('Fecha inválida:', dateStr);
+                return '';
+            }
+            
             return date.toISOString().split('T')[0];
         }
 
+        function populateFilters() {
+            // Poblar Tipo
+            const tipoSel = document.getElementById('filterTipo');
+            const tipoActual = tipoSel.value;
+            const tipos = [...new Set(visits.map(v => v.tipo).filter(Boolean))].sort();
+            tipoSel.innerHTML = '<option value="">Todos</option>';
+            tipos.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                tipoSel.appendChild(opt);
+            });
+            if (tipos.includes(tipoActual)) tipoSel.value = tipoActual;
+
+            // Poblar Responsable
+            const respSel = document.getElementById('filterResponsable');
+            const respActual = respSel.value;
+            const responsables = [...new Set(visits.map(v => v.responsable).filter(Boolean))].sort();
+            respSel.innerHTML = '<option value="">Todos</option>';
+            responsables.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = r;
+                respSel.appendChild(opt);
+            });
+            if (responsables.includes(respActual)) respSel.value = respActual;
+        }
+
         function getFiltered() {
-            const modalidad = document.getElementById('filterModalidad').value;
-            const tipo = document.getElementById('filterTipo').value;
-            const responsable = document.getElementById('filterResponsable').value;
+            const modalidad = document.getElementById('filterModalidad').value.toLowerCase();
+            const tipo = document.getElementById('filterTipo').value.toLowerCase();
+            const responsable = document.getElementById('filterResponsable').value.toLowerCase();
             return visits.filter(v => {
-                if (modalidad && v.modalidad !== modalidad) return false;
-                if (tipo && v.tipo !== tipo) return false;
-                if (responsable && v.responsable !== responsable) return false;
+                if (modalidad && (v.modalidad || '').toLowerCase() !== modalidad) return false;
+                if (tipo && (v.tipo || '').toLowerCase() !== tipo) return false;
+                if (responsable && (v.responsable || '').toLowerCase() !== responsable) return false;
                 return true;
             });
         }
@@ -1424,12 +1528,16 @@
                 
                 let visitsHtml = '';
                 dayVisits.forEach(v => {
-                    visitsHtml += `<div style="font-size:9px;padding:2px;background:#1e88e5;color:white;border-radius:3px;margin:1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${v.empresa}">
+                    const chipColor = v.estado === 'completado' ? '#2e7d32' : '#1e88e5';
+                    visitsHtml += `<div style="font-size:9px;padding:2px;background:${chipColor};color:white;border-radius:3px;margin:1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${v.empresa}">
                         <strong>${v.empresa}</strong><br>${v.responsable || '—'}<br>${v.tipo || '—'}<br>${v.hora || '—'}
                     </div>`;
                 });
 
-                html += `<div class="cal-day ${hasEvents ? 'has-events' : ''}" onclick="openModal('${dateStr}')" style="cursor:pointer;padding:4px;overflow-y:auto;">
+                const allCompleted = hasEvents && dayVisits.every(v => v.estado === 'completado');
+                const dayBg = allCompleted ? 'background:#c8e6c9;border-color:#2e7d32;' : '';
+
+                html += `<div class="cal-day ${hasEvents ? 'has-events' : ''}" onclick="openModal('${dateStr}')" style="cursor:pointer;padding:4px;overflow-y:auto;${dayBg}">
                     <div style="font-size:11px;font-weight:600;margin-bottom:4px;">${day}</div>
                     ${visitsHtml}
                 </div>`;
@@ -1497,10 +1605,13 @@
         }
 
         function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
+            // Remover active de todos los tabs y contenidos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Agregar active al tab y contenido seleccionado
             event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
         }
 
         function previousMonth() {
@@ -1630,6 +1741,10 @@
             modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
         }
 
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
         function showAlert(msg, type) {
             const box = document.getElementById('alertBox');
             const alert = document.createElement('div');
@@ -1644,6 +1759,7 @@
         document.getElementById('filterTipo').addEventListener('change', render);
         document.getElementById('filterResponsable').addEventListener('change', render);
 
+        populateFilters();
         render();
     </script>
 </body>
